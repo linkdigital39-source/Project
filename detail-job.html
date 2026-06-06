@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Pekerjaan - KerjaDekat</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <button onclick="window.history.back()" class="menu-btn">←</button>
+        <h1>Detail Pekerjaan</h1>
+        <div></div>
+    </div>
+
+    <!-- Detail Content -->
+    <div class="container" id="detailContent" style="padding: 0;">
+        <div class="loading-spinner" id="loadingSpinner" style="display: flex;">
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <!-- Modal Applicants -->
+    <div class="modal" id="applicantsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Daftar Pelamar</h2>
+                <button class="close-btn" onclick="document.getElementById('applicantsModal').classList.remove('active')">×</button>
+            </div>
+            <div class="modal-body" id="applicantsList"></div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+    <script src="firebase.js"></script>
+    <script src="app.js"></script>
+    <script>
+        let currentUserId = null;
+        let jobData = null;
+
+        async function loadJobDetail() {
+            const params = new URLSearchParams(window.location.search);
+            const jobId = params.get('id');
+            const user = await getCurrentUser();
+            currentUserId = user.uid;
+
+            if (!jobId) {
+                document.getElementById('detailContent').innerHTML = '<div class="empty-state"><p>Pekerjaan tidak ditemukan</p></div>';
+                return;
+            }
+
+            try {
+                const doc = await firebase.firestore().collection('jobs').doc(jobId).get();
+                const loadingSpinner = document.getElementById('loadingSpinner');
+                loadingSpinner.style.display = 'none';
+
+                if (!doc.exists) {
+                    document.getElementById('detailContent').innerHTML = '<div class="empty-state"><p>Pekerjaan tidak ditemukan</p></div>';
+                    return;
+                }
+
+                jobData = { id: doc.id, ...doc.data() };
+                const isOwner = jobData.userId === currentUserId;
+
+                let actionButtons = `
+                    <button class="btn-primary" onclick="applyJob('${jobData.id}')">Lamar Pekerjaan</button>
+                `;
+
+                if (isOwner) {
+                    actionButtons = `
+                        <button class="btn-secondary" onclick="openApplicants('${jobData.id}')">Lihat Pelamar (${jobData.totalApplicants || 0})</button>
+                        <button class="btn-danger" onclick="deleteJobFunc('${jobData.id}')">Hapus</button>
+                    `;
+                }
+
+                document.getElementById('detailContent').innerHTML = `
+                    <div class="card" style="border-radius: 0; margin-bottom: 0;">
+                        <div class="card-header">
+                            <div class="user-info">
+                                <img src="${jobData.userPhoto}" class="user-avatar" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBmaWxsPSIjMjBDOTk3Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iMjAiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSIgZm9udC1mYW1pbHk9IlBvcHBpbnMiIGZvbnQtd2VpZ2h0PSI3MDAiPkk8L3RleHQ+PC9zdmc+'" />
+                                <div class="user-details">
+                                    <div class="user-name" onclick="window.location.href='profile.html?uid=${jobData.userId}'" style="cursor: pointer;">
+                                        ${jobData.userName}
+                                        ${jobData.isVerified ? '<span class="badge badge-verified">✔️ Verifikasi</span>' : ''}
+                                        ${jobData.isPremium ? '<span class="badge badge-premium">🥇 Premium</span>' : ''}
+                                    </div>
+                                    <div class="user-meta">
+                                        <span class="rating">${getStarRating(jobData.userRating || 0)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <span style="background: ${jobData.status === 'open' ? '#20C997' : '#E9ECEF'}; color: ${jobData.status === 'open' ? 'white' : '#6C757D'}; padding: 4px 8px; border-radius: 4px; font-size: 11px;">✓ ${jobData.status === 'open' ? 'Aktif' : 'Tutup'}</span>
+                        </div>
+
+                        <div class="card-body">
+                            <h2 class="card-title" style="font-size: 20px;">${jobData.title}</h2>
+                            <div class="card-price" style="font-size: 22px; margin: 16px 0;">${formatPrice(jobData.price)}</div>
+                            <div style="background: #F8F9FA; padding: 12px; border-radius: 8px; margin-bottom: 16px;">
+                                <div style="font-size: 12px; color: #6C757D; margin-bottom: 4px;">Kategori</div>
+                                <div style="font-weight: 600;">${jobData.category}</div>
+                            </div>
+                            <p class="card-description" style="font-size: 14px; line-height: 1.8; margin-bottom: 20px;">${jobData.description}</p>
+                            <div class="card-meta" style="margin-bottom: 20px;">
+                                <div class="meta-item">
+                                    <span class="meta-icon">📍</span>
+                                    <div>
+                                        <div style="font-size: 12px; color: #6C757D;">Lokasi</div>
+                                        <div style="font-weight: 600;">${jobData.location}</div>
+                                    </div>
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-icon">👥</span>
+                                    <div>
+                                        <div style="font-size: 12px; color: #6C757D;">Pelamar</div>
+                                        <div style="font-weight: 600;">${jobData.totalApplicants || 0}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-footer" style="flex-direction: column; gap: 10px;">
+                            ${actionButtons}
+                        </div>
+                    </div>
+                `;
+
+            } catch (error) {
+                console.error('Error loading job:', error);
+                document.getElementById('detailContent').innerHTML = '<div class="empty-state"><p>Error memuat detail pekerjaan</p></div>';
+            }
+        }
+
+        async function openApplicants(jobId) {
+            const modal = document.getElementById('applicantsModal');
+            const list = document.getElementById('applicantsList');
+            list.innerHTML = '<div class="loading-spinner"><div class="spinner"></div></div>';
+            modal.classList.add('active');
+
+            getJobApplicants(jobId, (applicants) => {
+                if (applicants.length === 0) {
+                    list.innerHTML = '<div class="empty-state"><p>Belum ada pelamar</p></div>';
+                    return;
+                }
+
+                list.innerHTML = applicants.map(app => `
+                    <div class="list-item">
+                        <div class="list-item-content">
+                            <div class="list-item-title">${app.workerName}</div>
+                            <div class="list-item-meta">Rating: ${getStarRating(app.workerRating || 0)}</div>
+                        </div>
+                        <div class="list-item-action">
+                            <button class="btn-primary" style="width: auto; padding: 8px 16px; font-size: 12px;" onclick="selectWorker('${jobId}', '${app.workerId}')">Pilih</button>
+                            <button class="btn-secondary" style="width: auto; padding: 8px 16px; font-size: 12px;" onclick="contactViaWhatsApp('${app.whatsapp}')">Chat</button>
+                        </div>
+                    </div>
+                `).join('');
+            });
+        }
+
+        async function selectWorker(jobId, workerId) {
+            if (confirm('Pilih pekerja ini untuk pekerjaan ini?')) {
+                try {
+                    await selectWorkerForJob(jobId, workerId);
+                    alert('Pekerja berhasil dipilih!');
+                    window.location.reload();
+                } catch (error) {
+                    alert('Error: ' + error.message);
+                }
+            }
+        }
+
+        async function applyJob(jobId) {
+            try {
+                await applyForJob(jobId);
+                alert('Lamaran berhasil dikirim!');
+                window.location.reload();
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        async function deleteJobFunc(jobId) {
+            if (confirm('Hapus pekerjaan ini?')) {
+                try {
+                    await deleteJob(jobId);
+                    alert('Pekerjaan berhasil dihapus!');
+                    window.location.href = 'jobs.html';
+                } catch (error) {
+                    alert('Error: ' + error.message);
+                }
+            }
+        }
+
+        function contactViaWhatsApp(whatsapp) {
+            if (!whatsapp) {
+                alert('Nomor WhatsApp tidak tersedia');
+                return;
+            }
+            const cleanPhone = whatsapp.replace(/\D/g, '');
+            const url = `https://wa.me/${cleanPhone}`;
+            window.open(url, '_blank');
+        }
+
+        checkAuth().then(() => {
+            loadJobDetail();
+        });
+    </script>
+</body>
+</html>
