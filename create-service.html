@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buat Jasa - KerjaDekat</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <button onclick="window.history.back()" class="menu-btn">←</button>
+        <h1>Buat Jasa Baru</h1>
+        <div></div>
+    </div>
+
+    <!-- Form Container -->
+    <div class="container" style="padding: 20px;">
+        <form id="createServiceForm">
+            <div class="form-group">
+                <label>Judul Jasa *</label>
+                <input type="text" id="serviceTitle" placeholder="Contoh: Les Bahasa Inggris Online" required>
+            </div>
+
+            <div class="form-group">
+                <label>Deskripsi Jasa *</label>
+                <textarea id="serviceDesc" placeholder="Jelaskan jasa Anda secara detail" rows="4" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Harga Mulai (Rp) *</label>
+                <input type="number" id="servicePrice" placeholder="50000" min="0" required>
+            </div>
+
+            <div class="form-group">
+                <label>Kategori *</label>
+                <select id="serviceCategory" required>
+                    <option value="">Pilih kategori</option>
+                    <option value="cleaning">Pembersihan</option>
+                    <option value="repair">Reparasi</option>
+                    <option value="tutoring">Les/Tutor</option>
+                    <option value="delivery">Pengiriman</option>
+                    <option value="cooking">Masak/Katering</option>
+                    <option value="beauty">Kecantikan</option>
+                    <option value="design">Design</option>
+                    <option value="writing">Menulis</option>
+                    <option value="translation">Terjemahan</option>
+                    <option value="other">Lainnya</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Lokasi (Kota) *</label>
+                <input type="text" id="serviceLocation" placeholder="Jakarta, Bandung, dll" required>
+            </div>
+
+            <button type="submit" class="btn-primary btn-lg mt-20">Buat Jasa</button>
+            <p id="serviceError" class="error-message"></p>
+            <p id="serviceSuccess" class="success-message"></p>
+        </form>
+    </div>
+
+    <div class="loading-spinner" id="createServiceSpinner" style="display: none;">
+        <div class="spinner"></div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+    <script src="firebase.js"></script>
+    <script src="app.js"></script>
+    <script>
+        document.getElementById('createServiceForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const title = document.getElementById('serviceTitle').value.trim();
+            const description = document.getElementById('serviceDesc').value.trim();
+            const price = parseInt(document.getElementById('servicePrice').value);
+            const category = document.getElementById('serviceCategory').value;
+            const location = document.getElementById('serviceLocation').value.trim();
+
+            const errorEl = document.getElementById('serviceError');
+            const successEl = document.getElementById('serviceSuccess');
+            const spinner = document.getElementById('createServiceSpinner');
+
+            errorEl.textContent = '';
+            successEl.textContent = '';
+
+            if (!title || !description || !price || !category || !location) {
+                errorEl.textContent = 'Semua field wajib diisi!';
+                return;
+            }
+
+            spinner.style.display = 'flex';
+
+            try {
+                const user = await getCurrentUser();
+                if (!user) throw new Error('User tidak ditemukan');
+
+                await createService({
+                    title: title,
+                    description: description,
+                    price: price,
+                    category: category,
+                    location: location,
+                    whatsapp: user.whatsapp,
+                    status: 'active'
+                });
+
+                successEl.textContent = 'Jasa berhasil dibuat! Redirecting...';
+                setTimeout(() => {
+                    window.location.href = 'jasa.html';
+                }, 1500);
+
+            } catch (error) {
+                errorEl.textContent = 'Error: ' + error.message;
+                console.error('Create service error:', error);
+            } finally {
+                spinner.style.display = 'none';
+            }
+        });
+
+        checkAuth();
+    </script>
+</body>
+</html>

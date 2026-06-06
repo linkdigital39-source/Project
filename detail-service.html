@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Jasa - KerjaDekat</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <button onclick="window.history.back()" class="menu-btn">←</button>
+        <h1>Detail Jasa</h1>
+        <div></div>
+    </div>
+
+    <!-- Detail Content -->
+    <div class="container" id="detailContent" style="padding: 0;">
+        <div class="loading-spinner" id="loadingSpinner" style="display: flex;">
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+    <script src="firebase.js"></script>
+    <script src="app.js"></script>
+    <script>
+        async function loadServiceDetail() {
+            const params = new URLSearchParams(window.location.search);
+            const serviceId = params.get('id');
+
+            if (!serviceId) {
+                document.getElementById('detailContent').innerHTML = '<div class="empty-state"><p>Jasa tidak ditemukan</p></div>';
+                return;
+            }
+
+            try {
+                const doc = await firebase.firestore().collection('services').doc(serviceId).get();
+                const loadingSpinner = document.getElementById('loadingSpinner');
+                loadingSpinner.style.display = 'none';
+
+                if (!doc.exists) {
+                    document.getElementById('detailContent').innerHTML = '<div class="empty-state"><p>Jasa tidak ditemukan</p></div>';
+                    return;
+                }
+
+                const service = { id: doc.id, ...doc.data() };
+
+                document.getElementById('detailContent').innerHTML = `
+                    <div class="card" style="border-radius: 0; margin-bottom: 0;">
+                        <div class="card-header">
+                            <div class="user-info">
+                                <img src="${service.userPhoto}" class="user-avatar" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBmaWxsPSIjMjBDOTk3Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iMjAiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSIgZm9udC1mYW1pbHk9IlBvcHBpbnMiIGZvbnQtd2VpZ2h0PSI3MDAiPkk8L3RleHQ+PC9zdmc+'" />
+                                <div class="user-details">
+                                    <div class="user-name" onclick="window.location.href='profile.html?uid=${service.userId}'" style="cursor: pointer;">
+                                        ${service.userName}
+                                        ${service.isVerified ? '<span class="badge badge-verified">✔️ Verifikasi</span>' : ''}
+                                        ${service.isPremium ? '<span class="badge badge-premium">🥇 Premium</span>' : ''}
+                                    </div>
+                                    <div class="user-meta">
+                                        <span class="rating">${getStarRating(service.userRating || 0)}</span>
+                                        <span>${service.userRating ? '(' + service.userRating.toFixed(1) + ')' : ''}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <h2 class="card-title" style="font-size: 20px;">${service.title}</h2>
+                            <div class="card-price" style="font-size: 22px; margin: 16px 0;">${formatPrice(service.price)}</div>
+                            <div style="background: #F8F9FA; padding: 12px; border-radius: 8px; margin-bottom: 16px;">
+                                <div style="font-size: 12px; color: #6C757D; margin-bottom: 4px;">Kategori</div>
+                                <div style="font-weight: 600;">${service.category}</div>
+                            </div>
+                            <p class="card-description" style="font-size: 14px; line-height: 1.8; margin-bottom: 20px;">${service.description}</p>
+                            <div class="card-meta" style="margin-bottom: 20px;">
+                                <div class="meta-item">
+                                    <span class="meta-icon">📍</span>
+                                    <div>
+                                        <div style="font-size: 12px; color: #6C757D;">Lokasi</div>
+                                        <div style="font-weight: 600;">${service.location}</div>
+                                    </div>
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-icon">👤</span>
+                                    <div>
+                                        <div style="font-size: 12px; color: #6C757D;">Penyedia</div>
+                                        <div style="font-weight: 600;">${service.userName}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-footer" style="flex-direction: column; gap: 10px;">
+                            <button class="btn-primary" onclick="contactViaWhatsApp('${service.whatsapp}')">💬 Hubungi via WhatsApp</button>
+                            <button class="btn-secondary" onclick="window.location.href='profile.html?uid=${service.userId}'">👤 Lihat Profil</button>
+                        </div>
+                    </div>
+                `;
+
+            } catch (error) {
+                console.error('Error loading service:', error);
+                document.getElementById('detailContent').innerHTML = '<div class="empty-state"><p>Error memuat detail jasa</p></div>';
+            }
+        }
+
+        function contactViaWhatsApp(whatsapp) {
+            if (!whatsapp) {
+                alert('Nomor WhatsApp tidak tersedia');
+                return;
+            }
+            const cleanPhone = whatsapp.replace(/\D/g, '');
+            const url = `https://wa.me/${cleanPhone}`;
+            window.open(url, '_blank');
+        }
+
+        checkAuth().then(() => {
+            loadServiceDetail();
+        });
+    </script>
+</body>
+</html>
