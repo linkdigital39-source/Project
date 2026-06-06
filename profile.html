@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil - KerjaDekat</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>KerjaDekat</h2>
+            <p>Marketplace Jasa Lokal</p>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="home.html" class="sidebar-link">🏠 Beranda</a></li>
+            <li><a href="jasa.html" class="sidebar-link">💼 Jasa</a></li>
+            <li><a href="jobs.html" class="sidebar-link">📋 Pekerjaan</a></li>
+            <li><a href="profile.html" class="sidebar-link active">👤 Profil</a></li>
+            <li><a href="#" onclick="logout()" class="sidebar-link">🚪 Logout</a></li>
+        </ul>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <button class="menu-btn" id="menuBtn">☰</button>
+        <h1>Profil Saya</h1>
+        <button class="btn-icon">⚙️</button>
+    </div>
+
+    <!-- Profile Header -->
+    <div class="profile-header" id="profileHeader">
+        <div class="loading-spinner" id="loadingSpinner" style="display: flex;">
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('services')">💼 Jasa Saya</button>
+            <button class="tab" onclick="switchTab('jobs')">📋 Job Saya</button>
+            <button class="tab" onclick="switchTab('reviews')">⭐ Ulasan</button>
+        </div>
+
+        <!-- Services Tab -->
+        <div class="tab-content active" id="servicesTab" style="padding: 10px;">
+            <button class="btn-primary" style="width: 100%; margin-bottom: 20px;" onclick="window.location.href='create-service.html'">+ Tambah Jasa</button>
+            <div id="servicesList"></div>
+        </div>
+
+        <!-- Jobs Tab -->
+        <div class="tab-content" id="jobsTab" style="padding: 10px;">
+            <button class="btn-primary" style="width: 100%; margin-bottom: 20px;" onclick="window.location.href='create-job.html'">+ Tambah Job</button>
+            <div id="jobsList"></div>
+        </div>
+
+        <!-- Reviews Tab -->
+        <div class="tab-content" id="reviewsTab" style="padding: 10px;">
+            <div id="reviewsList"></div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+    <script src="firebase.js"></script>
+    <script src="app.js"></script>
+    <script>
+        let currentUser = null;
+        let viewingUserId = null;
+
+        async function loadProfileHeader() {
+            const params = new URLSearchParams(window.location.search);
+            viewingUserId = params.get('uid');
+
+            const user = await getCurrentUser();
+            currentUser = user;
+
+            if (!viewingUserId) {
+                viewingUserId = user.uid;
+            }
+
+            try {
+                const doc = await firebase.firestore().collection('users').doc(viewingUserId).get();
+                if (!doc.exists) throw new Error('User tidak ditemukan');
+
+                const userData = doc.data();
+                const isOwnProfile = viewingUserId === currentUser.uid;
+
+                document.getElementById('profileHeader').innerHTML = `
+                    <img src="${userData.photo}" class="profile-avatar" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjMjBDOTk3Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iNDAiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSIgZm9udC1mYW1pbHk9IlBvcHBpbnMiIGZvbnQtd2VpZ2h0PSI3MDAiPkk8L3RleHQ+PC9zdmc+'" />
+                    <div class="profile-name">${userData.name}</div>
+                    <div class="profile-meta">📍 ${userData.location} • ${userData.jobCategory}</div>
+                    <div class="profile-badges">
+                        ${userData.isVerified ? '<span class="badge badge-verified">✔️ Verifikasi</span>' : ''}
+                        ${userData.isPremium ? '<span class="badge badge-premium">🥇 Premium</span>' : ''}
+                    </div>
+                    <div class="profile-stats">
+                        <div class="stat">
+                            <div class="stat-value">${userData.averageRating.toFixed(1)}</div>
+                            <div class="stat-label">Rating</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">${userData.totalReviews}</div>
+                            <div class="stat-label">Ulasan</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">${userData.completedJobs}</div>
+                            <div class="stat-label">Job Selesai</div>
+                        </div>
+                    </div>
+                    ${!isOwnProfile ? `<button class="btn-primary" style="width: 100%; margin-top: 16px;" onclick="contactViaWhatsApp('${userData.whatsapp}')">💬 Hubungi</button>` : ''}
+                `;
+
+                if (isOwnProfile) {
+                    loadUserServices(viewingUserId);
+                    loadUserJobs(viewingUserId);
+                    loadUserReviews(viewingUserId);
+                }
+
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                document.getElementById('profileHeader').innerHTML = '<div class="empty-state"><p>Error memuat profil</p></div>';
+            }
+        }
+
+        function loadUserServices(userId) {
+            getUserServices(userId, (services) => {
+                const list = document.getElementById('servicesList');
+                if (services.length === 0) {
+                    list.innerHTML = '<div class="empty-state"><p>Belum ada jasa</p></div>';
+                    return;
+                }
+                list.innerHTML = services.map(s => `
+                    <div class="list-item">
+                        <div class="list-item-content">
+                            <div class="list-item-title">${s.title}</div>
+                            <div class="list-item-meta">${formatPrice(s.price)} • ${s.location}</div>
+                        </div>
+                        <div class="list-item-action">
+                            <button class="btn-danger" style="width: auto; padding: 6px 12px; font-size: 12px;" onclick="deleteServiceFunc('${s.id}')">Hapus</button>
+                        </div>
+                    </div>
+                `).join('');
+            });
+        }
+
+        function loadUserJobs(userId) {
+            getUserJobs(userId, (jobs) => {
+                const list = document.getElementById('jobsList');
+                if (jobs.length === 0) {
+                    list.innerHTML = '<div class="empty-state"><p>Belum ada job</p></div>';
+                    return;
+                }
+                list.innerHTML = jobs.map(j => `
+                    <div class="list-item">
+                        <div class="list-item-content">
+                            <div class="list-item-title">${j.title}</div>
+                            <div class="list-item-meta">${formatPrice(j.price)} • ${j.status}</div>
+                        </div>
+                        <div class="list-item-action">
+                            <button class="btn-secondary" style="width: auto; padding: 6px 12px; font-size: 12px;" onclick="window.location.href='detail-job.html?id=${j.id}'">Lihat</button>
+                            <button class="btn-danger" style="width: auto; padding: 6px 12px; font-size: 12px;" onclick="deleteJobFunc('${j.id}')">Hapus</button>
+                        </div>
+                    </div>
+                `).join('');
+            });
+        }
+
+        function loadUserReviews(userId) {
+            getUserReviews(userId, (reviews) => {
+                const list = document.getElementById('reviewsList');
+                if (reviews.length === 0) {
+                    list.innerHTML = '<div class="empty-state"><p>Belum ada ulasan</p></div>';
+                    return;
+                }
+                list.innerHTML = reviews.map(r => `
+                    <div class="card" style="margin-bottom: 10px;">
+                        <div class="card-body">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <div style="font-weight: 600;">${r.fromUserName}</div>
+                                <span class="rating">${getStarRating(r.rating)}</span>
+                            </div>
+                            <p style="font-size: 13px; color: #6C757D;">${r.comment}</p>
+                            <div style="font-size: 11px; color: #999; margin-top: 8px;">${formatDate(r.createdAt)}</div>
+                        </div>
+                    </div>
+                `).join('');
+            });
+        }
+
+        async function deleteServiceFunc(serviceId) {
+            if (confirm('Hapus jasa ini?')) {
+                try {
+                    await deleteService(serviceId);
+                    alert('Jasa berhasil dihapus!');
+                    window.location.reload();
+                } catch (error) {
+                    alert('Error: ' + error.message);
+                }
+            }
+        }
+
+        async function deleteJobFunc(jobId) {
+            if (confirm('Hapus job ini?')) {
+                try {
+                    await deleteJob(jobId);
+                    alert('Job berhasil dihapus!');
+                    window.location.reload();
+                } catch (error) {
+                    alert('Error: ' + error.message);
+                }
+            }
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active');
+        }
+
+        function contactViaWhatsApp(whatsapp) {
+            if (!whatsapp) {
+                alert('Nomor WhatsApp tidak tersedia');
+                return;
+            }
+            const cleanPhone = whatsapp.replace(/\D/g, '');
+            const url = `https://wa.me/${cleanPhone}`;
+            window.open(url, '_blank');
+        }
+
+        checkAuth().then(() => {
+            document.getElementById('loadingSpinner').style.display = 'none';
+            loadProfileHeader();
+        });
+    </script>
+</body>
+</html>
