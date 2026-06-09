@@ -58,11 +58,7 @@
                     </select>
                 </div>
 
-                <div class="form-group">
-                    <label>Foto Profil (Opsional)</label>
-                    <input type="file" id="regPhoto" accept="image/*">
-                    <small>Ukuran max 2MB. Jika tidak upload, akan pakai avatar default.</small>
-                </div>
+                <!-- Avatar akan auto-generate dari nama -->
 
                 <button type="submit" class="btn-primary btn-lg">Daftar</button>
 
@@ -83,12 +79,9 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
     <script src="firebase.js"></script>
     <script src="app.js"></script>
     <script>
-        const DEFAULT_AVATAR = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzIwQzk5NyIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LXNpemU9IjEwMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIiBmb250LWZhbWlseT0iQXJpYWwiPkk8L3RleHQ+PC9zdmc+';
-
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
@@ -98,7 +91,6 @@
             const whatsapp = document.getElementById('regWhatsapp').value.trim();
             const location = document.getElementById('regLocation').value.trim();
             const category = document.getElementById('regCategory').value;
-            const photoFile = document.getElementById('regPhoto').files[0];
 
             const errorEl = document.getElementById('registerError');
             const successEl = document.getElementById('registerSuccess');
@@ -124,18 +116,9 @@
                 const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
                 const uid = userCredential.user.uid;
 
-                let photoURL = DEFAULT_AVATAR;
-
-                // Upload foto jika ada
-                if (photoFile) {
-                    try {
-                        const storageRef = firebase.storage().ref('users/' + uid + '/profile');
-                        await storageRef.put(photoFile);
-                        photoURL = await storageRef.getDownloadURL();
-                    } catch (uploadError) {
-                        console.warn('Foto upload gagal, gunakan default:', uploadError);
-                    }
-                }
+                // MVP: Auto-generate avatar dari nama (tidak perlu storage)
+                const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+                const photoURL = `data:image/svg+xml;base64,${btoa(`<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#20C997"/><text x="50%" y="50%" font-size="100" fill="white" text-anchor="middle" dy=".3em" font-family="Poppins" font-weight="700">${initials}</text></svg>`)}`;
 
                 // Simpan data user ke Firestore
                 await firebase.firestore().collection('users').doc(uid).set({
