@@ -14,4 +14,6 @@ firebase.initializeApp(firebaseConfig);
 // Export untuk digunakan di app.js
 const auth = firebase.auth();
 const db = firebase.firestore();
-const storage = firebase.storage();
+
+// Storage untuk MVP tidak digunakan (akan ditambah setelah upgrade)
+// const storage = firebase.storage();
