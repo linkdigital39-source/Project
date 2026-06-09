@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jasa - KerjaDekat</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIyNCIgY3k9IjI0IiByPSIyMCIgZmlsbD0iIzAwNjVDQyIgc3Ryb2tlPSIjMDA0Mzg1IiBzdHJva2Utd2lkdGg9IjIiLz48cmVjdCB4PSIxNiIgeT0iMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iI0ZGQjgxQyIgcng9IjIiLz48Y2lyY2xlIGN4PSIyMiIgY3k9IjIyIiByPSIyIiBmaWxsPSIjMDA2NUNDIi8+PC9zdmc+" alt="Logo" class="sidebar-logo">
+            <h2>KerjaDekat</h2>
+            <button class="close-btn" onclick="document.getElementById('sidebar').classList.remove('active'); document.getElementById('sidebarOverlay').classList.remove('active');">&times;</button>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="home.html" class="sidebar-link"><i class="fas fa-home"></i> Home</a>
+            <a href="job.html" class="sidebar-link"><i class="fas fa-briefcase"></i> Lowongan Kerja</a>
+            <a href="jasa.html" class="sidebar-link active"><i class="fas fa-tools"></i> Jasa</a>
+            <a href="profile.html" class="sidebar-link"><i class="fas fa-user"></i> Profil</a>
+            <hr style="margin: 15px 0; border: none; border-top: 1px solid #eee;">
+            <a href="#" onclick="logout();" class="sidebar-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+    </div>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <button class="menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button>
+        <div class="header-logo">
+            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIxNiIgY3k9IjE2IiByPSIxNCIgZmlsbD0iIzAwNjVDQyIgc3Ryb2tlPSIjMDA0Mzg1IiBzdHJva2Utd2lkdGg9IjEuNSIvPjxyZWN0IHg9IjEwIiB5PSIxMCIgd2lkdGg9IjEyIiBoZWlnaHQ9IjEyIiBmaWxsPSIjRkZCODFDIiByeD0iMS41Ii8+PGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMS41IiBmaWxsPSIjMDA2NUNDIi8+PC9zdmc+" alt="KerjaDekat" class="logo-icon">
+            <span class="logo-text">KerjaDekat</span>
+        </div>
+        <button class="user-menu-btn" id="userMenuBtn"><i class="fas fa-user-circle"></i></button>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header Section -->
+        <section class="page-header">
+            <h1><i class="fas fa-tools"></i> Jasa & Layanan</h1>
+            <p>Temukan profesional terbaik untuk kebutuhan Anda</p>
+        </section>
+
+        <!-- Filter Section -->
+        <section class="filter-section">
+            <div class="filter-group">
+                <input type="text" id="searchInput" class="search-input" placeholder="Cari jasa..." onkeyup="filterServices()">
+                <select id="sortSelect" class="sort-select" onchange="filterServices()">
+                    <option value="recent">Terbaru</option>
+                    <option value="popular">Paling Diminati</option>
+                    <option value="pricelow">Harga Rendah</option>
+                    <option value="pricehigh">Harga Tinggi</option>
+                    <option value="rating">Rating Tertinggi</option>
+                </select>
+            </div>
+            <a href="create-service.html" class="btn-primary"><i class="fas fa-plus"></i> Tawarkan Jasa</a>
+        </section>
+
+        <!-- Services Grid -->
+        <section class="services-section">
+            <div class="services-container" id="servicesContainer">
+                <div class="loading"><i class="fas fa-spinner fa-spin"></i> Memuat jasa...</div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2024 KerjaDekat. Semua hak dilindungi.</p>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="firebase.js"></script>
+    <script src="app.js"></script>
+    <script>
+        let allServices = [];
+        let currentUser = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            currentUser = await checkAuth();
+            loadServices(renderServices);
+        });
+
+        function renderServices(services) {
+            allServices = services;
+            const container = document.getElementById('servicesContainer');
+            
+            if (services.length === 0) {
+                container.innerHTML = '<p class="no-data">Tidak ada jasa saat ini</p>';
+                return;
+            }
+
+            container.innerHTML = services.map(service => {
+                const createdDate = service.createdAt?.toDate?.() || new Date();
+                return `
+                    <div class="service-card">
+                        <div class="service-image-placeholder">
+                            <i class="fas fa-image"></i>
+                        </div>
+                        <div class="service-header">
+                            <div class="provider-info">
+                                <img src="${service.userPhoto || createAvatarUrl(service.userName)}" alt="${service.userName}" class="provider-avatar">
+                                <div>
+                                    <h4>${service.userName}</h4>
+                                    <div class="rating">
+                                        <span class="stars">${getStarRating(service.userRating || 0)}</span>
+                                        <span class="rating-value">${(service.userRating || 0).toFixed(1)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            ${service.isVerified ? '<span class="badge badge-verified"><i class="fas fa-check-circle"></i></span>' : ''}
+                        </div>
+                        <div class="service-content">
+                            <h3>${service.title}</h3>
+                            <p class="description">${service.description?.substring(0, 100)}...</p>
+                            <div class="service-meta">
+                                <span><i class="fas fa-tag"></i> ${service.category}</span>
+                            </div>
+                        </div>
+                        <div class="service-footer">
+                            <span class="price">${formatPrice(service.price)}</span>
+                            <span class="time">${formatDate(createdDate)}</span>
+                            <a href="detail-service.html?id=${service.id}" class="btn-outline">Lihat Detail</a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterServices() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const sortBy = document.getElementById('sortSelect').value;
+
+            let filtered = allServices.filter(service => 
+                service.title.toLowerCase().includes(searchTerm) ||
+                service.description.toLowerCase().includes(searchTerm) ||
+                service.category.toLowerCase().includes(searchTerm)
+            );
+
+            // Sort
+            if (sortBy === 'rating') {
+                filtered.sort((a, b) => (b.userRating || 0) - (a.userRating || 0));
+            } else if (sortBy === 'pricelow') {
+                filtered.sort((a, b) => a.price - b.price);
+            } else if (sortBy === 'pricehigh') {
+                filtered.sort((a, b) => b.price - a.price);
+            }
+
+            renderServices(filtered);
+        }
+    </script>
+</body>
+</html>

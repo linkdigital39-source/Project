@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - KerjaDekat</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIyNCIgY3k9IjI0IiByPSIyMCIgZmlsbD0iIzAwNjVDQyIgc3Ryb2tlPSIjMDA0Mzg1IiBzdHJva2Utd2lkdGg9IjIiLz48cmVjdCB4PSIxNiIgeT0iMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iI0ZGQjgxQyIgcng9IjIiLz48Y2lyY2xlIGN4PSIyMiIgY3k9IjIyIiByPSIyIiBmaWxsPSIjMDA2NUNDIi8+PC9zdmc+" alt="Logo" class="sidebar-logo">
+            <h2>KerjaDekat</h2>
+            <button class="close-btn" onclick="document.getElementById('sidebar').classList.remove('active'); document.getElementById('sidebarOverlay').classList.remove('active');">&times;</button>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="home.html" class="sidebar-link active"><i class="fas fa-home"></i> Home</a>
+            <a href="job.html" class="sidebar-link"><i class="fas fa-briefcase"></i> Lowongan Kerja</a>
+            <a href="jasa.html" class="sidebar-link"><i class="fas fa-tools"></i> Jasa</a>
+            <a href="profile.html" class="sidebar-link"><i class="fas fa-user"></i> Profil</a>
+            <hr style="margin: 15px 0; border: none; border-top: 1px solid #eee;">
+            <a href="#" onclick="logout();" class="sidebar-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+    </div>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <button class="menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button>
+        <div class="header-logo">
+            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIxNiIgY3k9IjE2IiByPSIxNCIgZmlsbD0iIzAwNjVDQyIgc3Ryb2tlPSIjMDA0Mzg1IiBzdHJva2Utd2lkdGg9IjEuNSIvPjxyZWN0IHg9IjEwIiB5PSIxMCIgd2lkdGg9IjEyIiBoZWlnaHQ9IjEyIiBmaWxsPSIjRkZCODFDIiByeD0iMS41Ii8+PGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMS41IiBmaWxsPSIjMDA2NUNDIi8+PC9zdmc+" alt="KerjaDekat" class="logo-icon">
+            <span class="logo-text">KerjaDekat</span>
+        </div>
+        <button class="user-menu-btn" id="userMenuBtn"><i class="fas fa-user-circle"></i></button>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Welcome Section -->
+        <section class="welcome-section">
+            <h1>Selamat Datang di KerjaDekat</h1>
+            <p>Marketplace jasa lokal terpercaya untuk kebutuhan Anda</p>
+            <div class="welcome-buttons">
+                <a href="job.html" class="btn-primary"><i class="fas fa-briefcase"></i> Cari Lowongan Kerja</a>
+                <a href="jasa.html" class="btn-secondary"><i class="fas fa-tools"></i> Cari Jasa</a>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features-section">
+            <h2>Mengapa Memilih KerjaDekat?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Terpercaya</h3>
+                    <p>Semua pengguna terverifikasi dan memiliki rating dari komunitas</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <h3>Lokal</h3>
+                    <p>Temukan jasa dan pekerjaan di area sekitar Anda</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-hand-holding-usd"></i>
+                    <h3>Terjangkau</h3>
+                    <p>Harga kompetitif dengan kualitas terbaik</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-headset"></i>
+                    <h3>Dukungan 24/7</h3>
+                    <p>Tim kami siap membantu kapan saja Anda membutuhkan</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recent Listings -->
+        <section class="recent-section">
+            <h2>Lowongan & Jasa Terbaru</h2>
+            <div class="feed-container" id="feedContainer">
+                <div class="loading"><i class="fas fa-spinner fa-spin"></i> Memuat...</div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2024 KerjaDekat. Semua hak dilindungi.</p>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="firebase.js"></script>
+    <script src="app.js"></script>
+    <script>
+        let currentUser = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            currentUser = await checkAuth();
+            loadFeed(renderFeed);
+        });
+
+        function renderFeed(feed) {
+            const container = document.getElementById('feedContainer');
+            
+            if (feed.length === 0) {
+                container.innerHTML = '<p class="no-data">Tidak ada listing saat ini</p>';
+                return;
+            }
+
+            container.innerHTML = feed.slice(0, 6).map(item => {
+                const isJob = item.type === 'job';
+                const icon = isJob ? 'briefcase' : 'tools';
+                const badge = isJob ? 'Kerja' : 'Jasa';
+                const link = isJob ? `detail-job.html?id=${item.id}` : `detail-service.html?id=${item.id}`;
+
+                return `
+                    <div class="feed-card">
+                        <div class="feed-card-header">
+                            <div class="user-info">
+                                <img src="${item.userPhoto || createAvatarUrl(item.userName)}" alt="${item.userName}" class="user-avatar">
+                                <div>
+                                    <h4>${item.userName}</h4>
+                                    <small>${formatDate(item.createdAt?.toDate?.() || new Date())}</small>
+                                </div>
+                            </div>
+                            <span class="badge badge-${isJob ? 'job' : 'service'}"><i class="fas fa-${icon}"></i> ${badge}</span>
+                        </div>
+                        <div class="feed-card-content">
+                            <h3>${item.title}</h3>
+                            <p>${item.description?.substring(0, 100)}...</p>
+                        </div>
+                        <div class="feed-card-footer">
+                            <span class="price">${formatPrice(item.price || item.budget || 0)}</span>
+                            <a href="${link}" class="btn-outline">Lihat Detail</a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+    </script>
+</body>
+</html>
