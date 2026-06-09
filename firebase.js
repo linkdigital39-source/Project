@@ -1,11 +1,11 @@
 // Konfigurasi Firebase
 const firebaseConfig = {
-    apiKey: "AIzaSyDemoKey1234567890",
-    authDomain: "kerjadekat.firebaseapp.com",
-    projectId: "kerjadekat-app",
-    storageBucket: "kerjadekat-app.appspot.com",
-    messagingSenderId: "123456789",
-    appId: "1:123456789:web:abcd1234efgh5678"
+    apiKey: "AIzaSyC9IKr6LXdqxGwua1Te_9uxVim64nli3mY",
+    authDomain: "kerjadekat-ea6c6.firebaseapp.com",
+    projectId: "kerjadekat-ea6c6",
+    storageBucket: "kerjadekat-ea6c6.firebasestorage.app",
+    messagingSenderId: "404461697817",
+    appId: "1:404461697817:web:ca72ca35a6c213e9a96388"
 };
 
 // Initialize Firebase
