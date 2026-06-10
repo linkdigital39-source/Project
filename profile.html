@@ -6,126 +6,150 @@
     <title>Profil - KerjaDekat</title>
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <!-- Sidebar -->
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <!-- Sidebar Navigation -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
+            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIyNCIgY3k9IjI0IiByPSIyMCIgZmlsbD0iIzAwNjVDQyIgc3Ryb2tlPSIjMDA0Mzg1IiBzdHJva2Utd2lkdGg9IjIiLz48cmVjdCB4PSIxNiIgeT0iMTYiIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iI0ZGQjgxQyIgcng9IjIiLz48Y2lyY2xlIGN4PSIyMiIgY3k9IjIyIiByPSIyIiBmaWxsPSIjMDA2NUNDIi8+PC9zdmc+" alt="Logo" class="sidebar-logo">
             <h2>KerjaDekat</h2>
-            <p>Marketplace Jasa Lokal</p>
+            <button class="close-btn" onclick="document.getElementById('sidebar').classList.remove('active'); document.getElementById('sidebarOverlay').classList.remove('active');">&times;</button>
         </div>
-        <ul class="sidebar-menu">
-            <li><a href="home.html" class="sidebar-link">🏠 Beranda</a></li>
-            <li><a href="jasa.html" class="sidebar-link">💼 Jasa</a></li>
-            <li><a href="jobs.html" class="sidebar-link">📋 Pekerjaan</a></li>
-            <li><a href="profile.html" class="sidebar-link active">👤 Profil</a></li>
-            <li><a href="#" onclick="logout()" class="sidebar-link">🚪 Logout</a></li>
-        </ul>
+        <nav class="sidebar-nav">
+            <a href="home.html" class="sidebar-link"><i class="fas fa-home"></i> Home</a>
+            <a href="job.html" class="sidebar-link"><i class="fas fa-briefcase"></i> Lowongan Kerja</a>
+            <a href="jasa.html" class="sidebar-link"><i class="fas fa-tools"></i> Jasa</a>
+            <a href="profile.html" class="sidebar-link active"><i class="fas fa-user"></i> Profil</a>
+            <hr style="margin: 15px 0; border: none; border-top: 1px solid #eee;">
+            <a href="#" onclick="logout();" class="sidebar-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
     </div>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <!-- Header -->
-    <div class="header">
-        <button class="menu-btn" id="menuBtn">☰</button>
-        <h1>Profil Saya</h1>
-        <button class="btn-icon">⚙️</button>
-    </div>
-
-    <!-- Profile Header -->
-    <div class="profile-header" id="profileHeader">
-        <div class="loading-spinner" id="loadingSpinner" style="display: flex;">
-            <div class="spinner"></div>
+    <header class="header">
+        <button class="menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button>
+        <div class="header-logo">
+            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIxNiIgY3k9IjE2IiByPSIxNCIgZmlsbD0iIzAwNjVDQyIgc3Ryb2tlPSIjMDA0Mzg1IiBzdHJva2Utd2lkdGg9IjEuNSIvPjxyZWN0IHg9IjEwIiB5PSIxMCIgd2lkdGg9IjEyIiBoZWlnaHQ9IjEyIiBmaWxsPSIjRkZCODFDIiByeD0iMS41Ii8+PGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMS41IiBmaWxsPSIjMDA2NUNDIi8+PC9zdmc+" alt="KerjaDekat" class="logo-icon">
+            <span class="logo-text">KerjaDekat</span>
         </div>
-    </div>
+        <button class="user-menu-btn" id="userMenuBtn"><i class="fas fa-user-circle"></i></button>
+    </header>
 
-    <!-- Tabs -->
-    <div class="container">
-        <div class="tabs">
-            <button class="tab active" onclick="switchTab('services')">💼 Jasa Saya</button>
-            <button class="tab" onclick="switchTab('jobs')">📋 Job Saya</button>
-            <button class="tab" onclick="switchTab('reviews')">⭐ Ulasan</button>
-        </div>
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Profile Header -->
+        <section class="profile-header-section" id="profileHeader">
+            <div class="loading"><i class="fas fa-spinner fa-spin"></i> Memuat profil...</div>
+        </section>
 
-        <!-- Services Tab -->
-        <div class="tab-content active" id="servicesTab" style="padding: 10px;">
-            <button class="btn-primary" style="width: 100%; margin-bottom: 20px;" onclick="window.location.href='create-service.html'">+ Tambah Jasa</button>
-            <div id="servicesList"></div>
-        </div>
+        <!-- Profile Tabs -->
+        <section class="profile-tabs">
+            <div class="tabs-container">
+                <button class="tab-btn active" onclick="switchTab('services')"><i class="fas fa-tools"></i> Jasa Saya</button>
+                <button class="tab-btn" onclick="switchTab('jobs')"><i class="fas fa-briefcase"></i> Job Saya</button>
+                <button class="tab-btn" onclick="switchTab('reviews')"><i class="fas fa-star"></i> Ulasan</button>
+            </div>
 
-        <!-- Jobs Tab -->
-        <div class="tab-content" id="jobsTab" style="padding: 10px;">
-            <button class="btn-primary" style="width: 100%; margin-bottom: 20px;" onclick="window.location.href='create-job.html'">+ Tambah Job</button>
-            <div id="jobsList"></div>
-        </div>
+            <!-- Services Tab -->
+            <div class="tab-content active" id="servicesTab">
+                <div class="tab-header">
+                    <h2>Jasa Saya</h2>
+                    <a href="create-service.html" class="btn-primary"><i class="fas fa-plus"></i> Tambah Jasa</a>
+                </div>
+                <div id="servicesList" class="items-list"></div>
+            </div>
 
-        <!-- Reviews Tab -->
-        <div class="tab-content" id="reviewsTab" style="padding: 10px;">
-            <div id="reviewsList"></div>
-        </div>
-    </div>
+            <!-- Jobs Tab -->
+            <div class="tab-content" id="jobsTab">
+                <div class="tab-header">
+                    <h2>Job Saya</h2>
+                    <a href="create-job.html" class="btn-primary"><i class="fas fa-plus"></i> Buat Job</a>
+                </div>
+                <div id="jobsList" class="items-list"></div>
+            </div>
+
+            <!-- Reviews Tab -->
+            <div class="tab-content" id="reviewsTab">
+                <div class="tab-header">
+                    <h2>Ulasan yang Diterima</h2>
+                </div>
+                <div id="reviewsList" class="items-list"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2024 KerjaDekat. Semua hak dilindungi.</p>
+    </footer>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
     <script src="firebase.js"></script>
     <script src="app.js"></script>
     <script>
         let currentUser = null;
-        let viewingUserId = null;
 
         async function loadProfileHeader() {
-            const params = new URLSearchParams(window.location.search);
-            viewingUserId = params.get('uid');
-
-            const user = await getCurrentUser();
-            currentUser = user;
-
-            if (!viewingUserId) {
-                viewingUserId = user.uid;
-            }
-
             try {
-                const doc = await firebase.firestore().collection('users').doc(viewingUserId).get();
-                if (!doc.exists) throw new Error('User tidak ditemukan');
+                currentUser = await getCurrentUser();
+                if (!currentUser) throw new Error('User tidak ditemukan');
 
-                const userData = doc.data();
-                const isOwnProfile = viewingUserId === currentUser.uid;
+                const userPhoto = currentUser.photo || createAvatarUrl(currentUser.name);
+                const rating = currentUser.averageRating || 0;
+                const totalReviews = currentUser.totalReviews || 0;
+                const completedJobs = currentUser.completedJobs || 0;
 
                 document.getElementById('profileHeader').innerHTML = `
-                    <img src="${userData.photo}" class="profile-avatar" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjMjBDOTk3Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iNDAiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSIgZm9udC1mYW1pbHk9IlBvcHBpbnMiIGZvbnQtd2VpZ2h0PSI3MDAiPkk8L3RleHQ+PC9zdmc+'" />
-                    <div class="profile-name">${userData.name}</div>
-                    <div class="profile-meta">📍 ${userData.location} • ${userData.jobCategory}</div>
-                    <div class="profile-badges">
-                        ${userData.isVerified ? '<span class="badge badge-verified">✔️ Verifikasi</span>' : ''}
-                        ${userData.isPremium ? '<span class="badge badge-premium">🥇 Premium</span>' : ''}
-                    </div>
-                    <div class="profile-stats">
-                        <div class="stat">
-                            <div class="stat-value">${userData.averageRating.toFixed(1)}</div>
-                            <div class="stat-label">Rating</div>
-                        </div>
-                        <div class="stat">
-                            <div class="stat-value">${userData.totalReviews}</div>
-                            <div class="stat-label">Ulasan</div>
-                        </div>
-                        <div class="stat">
-                            <div class="stat-value">${userData.completedJobs}</div>
-                            <div class="stat-label">Job Selesai</div>
+                    <div class="profile-card">
+                        <img src="${userPhoto}" alt="${currentUser.name}" class="profile-avatar">
+                        <div class="profile-info">
+                            <h1>${currentUser.name}</h1>
+                            <p class="profile-category">${currentUser.jobCategory || 'Professional'}</p>
+                            <div class="profile-location">
+                                <i class="fas fa-map-marker-alt"></i> ${currentUser.location || 'Location'}
+                            </div>
+                            <div class="profile-badges">
+                                ${currentUser.isVerified ? '<span class="badge badge-verified"><i class="fas fa-check-circle"></i> Terverifikasi</span>' : ''}
+                                ${currentUser.isPremium ? '<span class="badge badge-premium"><i class="fas fa-crown"></i> Premium</span>' : ''}
+                            </div>
                         </div>
                     </div>
-                    ${!isOwnProfile ? `<button class="btn-primary" style="width: 100%; margin-top: 16px;" onclick="contactViaWhatsApp('${userData.whatsapp}')">💬 Hubungi</button>` : ''}
+                    <div class="profile-stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-star"></i></div>
+                            <div class="stat-content">
+                                <div class="stat-value">${rating.toFixed(1)}</div>
+                                <div class="stat-label">Rating</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-comment"></i></div>
+                            <div class="stat-content">
+                                <div class="stat-value">${totalReviews}</div>
+                                <div class="stat-label">Ulasan</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                            <div class="stat-content">
+                                <div class="stat-value">${completedJobs}</div>
+                                <div class="stat-label">Job Selesai</div>
+                            </div>
+                        </div>
+                    </div>
                 `;
 
-                if (isOwnProfile) {
-                    loadUserServices(viewingUserId);
-                    loadUserJobs(viewingUserId);
-                    loadUserReviews(viewingUserId);
-                }
+                loadUserServices(currentUser.uid);
+                loadUserJobs(currentUser.uid);
+                loadUserReviews(currentUser.uid);
 
             } catch (error) {
                 console.error('Error loading profile:', error);
-                document.getElementById('profileHeader').innerHTML = '<div class="empty-state"><p>Error memuat profil</p></div>';
+                document.getElementById('profileHeader').innerHTML = '<p class="error-message">Error memuat profil</p>';
             }
         }
 
@@ -133,17 +157,23 @@
             getUserServices(userId, (services) => {
                 const list = document.getElementById('servicesList');
                 if (services.length === 0) {
-                    list.innerHTML = '<div class="empty-state"><p>Belum ada jasa</p></div>';
+                    list.innerHTML = '<div class="no-data"><p><i class="fas fa-inbox"></i> Belum ada jasa</p></div>';
                     return;
                 }
                 list.innerHTML = services.map(s => `
-                    <div class="list-item">
-                        <div class="list-item-content">
-                            <div class="list-item-title">${s.title}</div>
-                            <div class="list-item-meta">${formatPrice(s.price)} • ${s.location}</div>
+                    <div class="item-card">
+                        <div class="item-content">
+                            <h3>${s.title}</h3>
+                            <p class="item-description">${s.description?.substring(0, 80)}...</p>
+                            <div class="item-meta">
+                                <span><i class="fas fa-tag"></i> ${s.category}</span>
+                                <span><i class="fas fa-map-marker-alt"></i> ${s.location}</span>
+                            </div>
                         </div>
-                        <div class="list-item-action">
-                            <button class="btn-danger" style="width: auto; padding: 6px 12px; font-size: 12px;" onclick="deleteServiceFunc('${s.id}')">Hapus</button>
+                        <div class="item-price">${formatPrice(s.price)}</div>
+                        <div class="item-actions">
+                            <a href="detail-service.html?id=${s.id}" class="btn-outline" style="padding: 0.5rem 1rem; font-size: 0.9rem;"><i class="fas fa-eye"></i> Lihat</a>
+                            <button onclick="deleteServiceFunc('${s.id}')" class="btn-danger" style="padding: 0.5rem 1rem; font-size: 0.9rem;"><i class="fas fa-trash"></i> Hapus</button>
                         </div>
                     </div>
                 `).join('');
@@ -154,18 +184,24 @@
             getUserJobs(userId, (jobs) => {
                 const list = document.getElementById('jobsList');
                 if (jobs.length === 0) {
-                    list.innerHTML = '<div class="empty-state"><p>Belum ada job</p></div>';
+                    list.innerHTML = '<div class="no-data"><p><i class="fas fa-inbox"></i> Belum ada job</p></div>';
                     return;
                 }
                 list.innerHTML = jobs.map(j => `
-                    <div class="list-item">
-                        <div class="list-item-content">
-                            <div class="list-item-title">${j.title}</div>
-                            <div class="list-item-meta">${formatPrice(j.price)} • ${j.status}</div>
+                    <div class="item-card">
+                        <div class="item-content">
+                            <h3>${j.title}</h3>
+                            <p class="item-description">${j.description?.substring(0, 80)}...</p>
+                            <div class="item-meta">
+                                <span><i class="fas fa-tag"></i> ${j.category}</span>
+                                <span><i class="fas fa-map-marker-alt"></i> ${j.location}</span>
+                                <span class="status-badge status-${j.status}">${j.status}</span>
+                            </div>
                         </div>
-                        <div class="list-item-action">
-                            <button class="btn-secondary" style="width: auto; padding: 6px 12px; font-size: 12px;" onclick="window.location.href='detail-job.html?id=${j.id}'">Lihat</button>
-                            <button class="btn-danger" style="width: auto; padding: 6px 12px; font-size: 12px;" onclick="deleteJobFunc('${j.id}')">Hapus</button>
+                        <div class="item-price">${formatPrice(j.budget)}</div>
+                        <div class="item-actions">
+                            <a href="detail-job.html?id=${j.id}" class="btn-outline" style="padding: 0.5rem 1rem; font-size: 0.9rem;"><i class="fas fa-eye"></i> Lihat</a>
+                            <button onclick="deleteJobFunc('${j.id}')" class="btn-danger" style="padding: 0.5rem 1rem; font-size: 0.9rem;"><i class="fas fa-trash"></i> Hapus</button>
                         </div>
                     </div>
                 `).join('');
@@ -176,26 +212,29 @@
             getUserReviews(userId, (reviews) => {
                 const list = document.getElementById('reviewsList');
                 if (reviews.length === 0) {
-                    list.innerHTML = '<div class="empty-state"><p>Belum ada ulasan</p></div>';
+                    list.innerHTML = '<div class="no-data"><p><i class="fas fa-inbox"></i> Belum ada ulasan</p></div>';
                     return;
                 }
                 list.innerHTML = reviews.map(r => `
-                    <div class="card" style="margin-bottom: 10px;">
-                        <div class="card-body">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                <div style="font-weight: 600;">${r.fromUserName}</div>
-                                <span class="rating">${getStarRating(r.rating)}</span>
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="reviewer-info">
+                                <img src="${r.fromUserPhoto || createAvatarUrl(r.fromUserName)}" alt="${r.fromUserName}" class="reviewer-avatar">
+                                <div>
+                                    <h4>${r.fromUserName}</h4>
+                                    <div class="rating"><span class="stars">${getStarRating(r.rating)}</span></div>
+                                </div>
                             </div>
-                            <p style="font-size: 13px; color: #6C757D;">${r.comment}</p>
-                            <div style="font-size: 11px; color: #999; margin-top: 8px;">${formatDate(r.createdAt)}</div>
+                            <div class="review-date">${formatDate(r.createdAt?.toDate?.() || new Date())}</div>
                         </div>
+                        <p class="review-comment">${r.comment}</p>
                     </div>
                 `).join('');
             });
         }
 
         async function deleteServiceFunc(serviceId) {
-            if (confirm('Hapus jasa ini?')) {
+            if (confirm('Apakah Anda yakin ingin menghapus jasa ini?')) {
                 try {
                     await deleteService(serviceId);
                     alert('Jasa berhasil dihapus!');
@@ -207,7 +246,7 @@
         }
 
         async function deleteJobFunc(jobId) {
-            if (confirm('Hapus job ini?')) {
+            if (confirm('Apakah Anda yakin ingin menghapus job ini?')) {
                 try {
                     await deleteJob(jobId);
                     alert('Job berhasil dihapus!');
@@ -219,26 +258,17 @@
         }
 
         function switchTab(tabName) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             
             event.target.classList.add('active');
             document.getElementById(tabName + 'Tab').classList.add('active');
         }
 
-        function contactViaWhatsApp(whatsapp) {
-            if (!whatsapp) {
-                alert('Nomor WhatsApp tidak tersedia');
-                return;
-            }
-            const cleanPhone = whatsapp.replace(/\D/g, '');
-            const url = `https://wa.me/${cleanPhone}`;
-            window.open(url, '_blank');
-        }
-
-        checkAuth().then(() => {
-            document.getElementById('loadingSpinner').style.display = 'none';
-            loadProfileHeader();
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            await checkAuth();
+            await loadProfileHeader();
         });
     </script>
 </body>
